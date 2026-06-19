@@ -1,0 +1,17 @@
+{
+  "server": {
+    "port": 8080
+  },
+  "security": {
+    "enabled": true,
+    "rules": "/login->permitAll,/health->permitAll,/api/public->permitAll,/api/protected->authenticated,/api/admin->hasRole('ADMIN')"
+  },
+  "jwt": {
+    "enabled": true,
+    "secret-key": "my-secret-key-123456",
+    "issuer": "go-boot-example",
+    "expires-duration": 1800,
+    "refresh-expires-duration": 7200,
+    "exclude-paths": "/login,/health,/api/public"
+  }
+}

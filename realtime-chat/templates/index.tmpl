@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{.title}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        #chat-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #chat-header { background: #4a90e2; color: white; padding: 15px; border-radius: 8px 8px 0 0; }
+        #chat-messages { height: 400px; overflow-y: scroll; padding: 15px; border-bottom: 1px solid #eee; }
+        .message { margin-bottom: 10px; }
+        .message.system { color: #999; font-style: italic; }
+        .message-text { font-weight: bold; }
+        .message-content { margin-left: 10px; }
+        #chat-input { padding: 15px; display: flex; }
+        #message-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        #send-button { margin-left: 10px; padding: 10px 20px; background: #4a90e2; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #send-button:hover { background: #357ae8; }
+        #user-panel { padding: 15px; background: #f9f9f9; border-top: 1px solid #eee; }
+        .user-list { display: flex; flex-wrap: wrap; gap: 5px; }
+        .user-item { background: #e6f3ff; padding: 5px 10px; border-radius: 12px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            <h2>{{.title}}</h2>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="user-panel">
+            <div>在线用户: <span id="online-users" class="user-list"></span></div>
+        </div>
+        <div id="chat-input">
+            <input type="text" id="message-input" placeholder="输入消息..." />
+            <button id="send-button">发送</button>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8085/ws');
+        const messagesDiv = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const onlineUsersSpan = document.getElementById('online-users');
+
+        ws.onopen = function(event) {
+            console.log('WebSocket连接已建立');
+            addMessage('System', '连接已建立', 'system');
+        };
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            addMessage(data.sender, data.content, data.message_type);
+        };
+
+        ws.onclose = function(event) {
+            console.log('WebSocket连接已关闭');
+            addMessage('System', '连接已断开', 'system');
+        };
+
+        ws.onerror = function(error) {
+            console.log('WebSocket发生错误: ' + error);
+        };
+
+        function addMessage(sender, content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const senderSpan = document.createElement('span');
+            senderSpan.className = 'message-text';
+            senderSpan.textContent = `${sender}: `;
+            
+            const contentSpan = document.createElement('span');
+            contentSpan.className = 'message-content';
+            contentSpan.textContent = content;
+            
+            messageDiv.appendChild(senderSpan);
+            messageDiv.appendChild(contentSpan);
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        sendButton.onclick = function() {
+            sendMessage();
+        };
+
+        messageInput.onkeypress = function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        };
+
+        function sendMessage() {
+            const content = messageInput.value.trim();
+            if (content) {
+                const message = {
+                    room: 'general',
+                    content: content
+                };
+                ws.send(JSON.stringify(message));
+                messageInput.value = '';
+            }
+        }
+
+        // 模拟更新在线用户列表（实际应用中应从服务器获取）
+        function updateOnlineUsers() {
+            // 这里可以定期从服务器获取在线用户列表
+            // 为了简化示例，我们不实现此功能
+        }
+        
+        setInterval(updateOnlineUsers, 5000); // 每5秒尝试更新一次
+    </script>
+</body>
+</html>

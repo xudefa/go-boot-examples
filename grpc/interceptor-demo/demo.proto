@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package demo;
+
+option go_package = "github.com/xudefa/go-boot/examples/grpc/interceptor-demo/pb";
+
+service DemoService {
+  rpc Echo(EchoRequest) returns (EchoResponse);
+}
+
+service PingService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+}
+
+message PingRequest {}
+
+message PingResponse {
+  string message = 1;
+}

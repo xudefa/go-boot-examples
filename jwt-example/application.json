@@ -1,0 +1,7 @@
+{
+  "jwt": {
+    "enabled": true,
+    "secret-key": "my-secret-key-123456",
+    "exclude-paths": "/login,/register,/health"
+  }
+}

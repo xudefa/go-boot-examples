@@ -1,0 +1,7 @@
+{
+  "app": {
+    "name": "prod-app",
+    "port": 80,
+    "debug": false
+  }
+}

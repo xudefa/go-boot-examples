@@ -1,0 +1,24 @@
+// proto3 语法 — gRPC 服务与消息定义
+syntax = "proto3";
+
+package hello;
+
+option go_package = "github.com/xudefa/go-boot/examples/grpc/pb";
+
+// HelloService 定义了两个 RPC 方法
+service HelloService {
+  // SayHello 一元 RPC：单个请求 → 单个响应
+  rpc SayHello(HelloRequest) returns (HelloResponse);
+  // SayHelloStream 服务端流式 RPC：单个请求 → 流式响应
+  rpc SayHelloStream(HelloRequest) returns (stream HelloResponse);
+}
+
+// HelloRequest 一元 RPC 的请求消息，包含用户名
+message HelloRequest {
+  string name = 1;
+}
+
+// HelloResponse RPC 的响应消息，包含问候语
+message HelloResponse {
+  string message = 1;
+}
